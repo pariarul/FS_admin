@@ -305,9 +305,9 @@ useEffect(() => {
           </button>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 mt-6">
-            {companyData.cards.map((card) => (
+            {(Array.isArray(companyData.cards) ? companyData.cards : []).map((card) => (
               <div
-                key={card.id}
+                key={card.id || Math.random().toString()}
                 className="group bg-gradient-to-br from-gray-50 to-white border border-gray-100 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1.5 p-6 lg:p-8"
               >
                 <div className="overflow-hidden rounded-2xl mb-5">

@@ -220,7 +220,8 @@ English:
     try {
       const payload = {
         assetName: product.assetName,
-        imagePath: product.imagePath,
+        oldImagePath: product.imagePath,
+        imagePath: uploadedImage && uploadedImage !== product.imagePath ? uploadedImage : product.imagePath,
         en: {
           category: product.category, // Category is fixed
           imageName: enName,
@@ -236,7 +237,6 @@ English:
           imageName: languageDetails.zh.imageName.trim(),
           origins: languageDetails.zh.origins.split(',').map(o => o.trim()).filter(Boolean),
         },
-        ...(uploadedImage && uploadedImage !== product.imagePath && { imagePath: uploadedImage }),
       };
 
       const response = await fetch(`${baseURL}/products/update-import-product`, {

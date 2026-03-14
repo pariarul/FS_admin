@@ -240,32 +240,7 @@ const EditLeadership: React.FC<EditLeadershipProps> = ({ data, onSave, onCancel 
       })),
     };
 
-    const payload = {
-      destination: (data as EditableDestination).destinationKey,
-      ...updatedData,
-    };
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/leadership/update-leadership`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update leadership data');
-      }
-
-      onSave(updatedData);
-      window.location.reload();
-    } catch (error) {
-      console.error(error);
-      alert('An error occurred while updating leadership data.');
-    } finally {
-      setIsLoading(false);
-    }
+    onSave(updatedData);
   };
 
   // Unified file handler

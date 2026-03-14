@@ -250,24 +250,6 @@ English:
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/suppliers/update-reviews`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editedReview),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to update review: ${response.status}`);
-      }
-
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.message || "Failed to update review");
-      }
-
-      // Ensure `editedReview` matches the `ReviewData` type before calling `onSave`
       onSave({
         ...editedReview,
         supplierCompanyName: {
@@ -275,7 +257,6 @@ English:
           zh: editedReview.supplierCompanyName.zh || "",
         },
       });
-      window.location.reload();
     } catch (error) {
       console.error("Error saving review:", error);
       alert(`Error: ${(error as Error).message}`);

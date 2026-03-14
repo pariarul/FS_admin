@@ -353,17 +353,8 @@ const EditManager: React.FC<EditManagerProps> = ({
     setSaveMsg(null);
 
     try {
-      const res = await fetch(`${baseURL}/suppliers/update-manager-section`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ manager: editedManager, supplierMap: editedMap }),
-      });
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
       setSaveMsg("Saved successfully!");
       onSave(editedManager, editedMap);
-      window.location.reload();
     } catch (err) {
       setSaveMsg(`Save failed: ${(err as Error).message}`);
     } finally {
@@ -449,7 +440,7 @@ const EditManager: React.FC<EditManagerProps> = ({
               <label className="block font-medium mb-1 text-gray-700">Name:</label>
               <input
                 type="text"
-                value={editedManager.name[lang] || ""}
+                value={editedManager?.name?.[lang] || ""}
                 onChange={(e) => handleInputChange(lang, "name", e.target.value)}
                 className="w-full border border-gray-300 rounded-lg p-3 mb-3 focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
               />

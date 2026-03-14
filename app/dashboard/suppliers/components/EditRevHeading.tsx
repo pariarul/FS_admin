@@ -13,7 +13,10 @@ type EditRevHeadingProps = {
 };
 
 const EditRevHeading: React.FC<EditRevHeadingProps> = ({ headingData, onSave, onCancel }) => {
-  const [editedHeading, setEditedHeading] = useState(headingData);
+  const [editedHeading, setEditedHeading] = useState({
+    heading: headingData?.heading || { en: "", zh: "", si: "" },
+    description: headingData?.description || { en: "", zh: "", si: "" },
+  });
   const [isTranslating, setIsTranslating] = useState(false);
 
   const geminiApiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
@@ -111,25 +114,7 @@ English:
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/suppliers/update-reviews-heading`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          heading: editedHeading.heading,
-          description: editedHeading.description,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || `Failed to update heading and description: ${response.status}`);
-      }
-
       onSave(editedHeading);
-      window.location.reload(); 
     } catch (error) {
       console.error("Error saving heading and description:", error);
       alert(`Error: ${(error as Error).message}`);

@@ -48,66 +48,61 @@ const SuppliersPage = () => {
 useEffect(() => {
   const fetchSupplierData = async () => {
     try {
-      setLoading(true);
-
       const response = await fetch(`${baseURL}/suppliers/get-suppliers-section`);
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status}`);
+        throw new Error("Failed to fetch suppliers");
       }
 
       const result = await response.json();
-console.log("API RESULT:", result);
-console.log("API DATA:", result.data);
-console.log("REVIEWS:", result.data.reviews);
+    console.log("Supplier API Response:", result);
 
-      if (!result.success || !result.data) {
-        throw new Error(result.message || "Invalid response");
+      if (result.success) {
+        const data = result.data;
+        setSupplierData(data);
+      } else {
+        console.error("Failed to fetch suppliers:", result.message);
       }
 
-      const apiData = result.data;
-
-      const formattedData = {
-        suppliers: {
-          heading: apiData.suppliers_heading,
-          manager: apiData.suppliers_manager,
-          supplierMap: apiData.supplier_map
-        },
-        reviews: {
-          heading: apiData.reviews_heading,
-          description: apiData.reviews_description,
-          reviews: apiData.reviews || []
-        }
-      };
-      console.log(formattedData.reviews);
-
-
-      setSupplierData(formattedData);
-
-    } catch (err: unknown) {
-      console.error("Error fetching suppliers:", err);
-      const error = err as Error;
-      setError(error.message || "Failed to load data");
+    } catch (error) {
+      console.error("Error fetching suppliers:", error);
     } finally {
       setLoading(false);
     }
   };
 
   fetchSupplierData();
-}, []);
+}, [baseURL]);
 
 
 
-    const handleSaveManager = (updatedManager: ManagerData, updatedMap?: SupplierMapData) => {
+
+    const saveToBackend = async (dataToSave: SupplierData) => {
+        try {
+            const response = await fetch(`${baseURL}/suppliers/update-supplier-section`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(dataToSave),
+            });
+            if (!response.ok) throw new Error("Failed to save to backend");
+        } catch (error) {
+            console.error("Error saving data:", error);
+            alert("Error saving data. Please check the console.");
+        }
+    };
+
+    const handleSaveManager = async (updatedManager: ManagerData, updatedMap?: SupplierMapData) => {
         if (supplierData) {
-            setSupplierData({
+            const newData = {
                 ...supplierData,
                 suppliers: {
-                    ...supplierData.suppliers,
+                    ...(supplierData.suppliers || {}),
                     manager: updatedManager,
                     supplierMap: updatedMap,
                 },
-            });
+            };
+            setSupplierData(newData);
+            await saveToBackend(newData);
         }
         setIsEditingManager(false);
     };
@@ -117,17 +112,20 @@ console.log("REVIEWS:", result.data.reviews);
         setIsEditingReview(true);
     };
 
-    const handleSaveReview = (updatedReview: SupplierReview) => {
+    const handleSaveReview = async (updatedReview: SupplierReview) => {
         if (supplierData) {
-            setSupplierData({
+            const existingReviews = supplierData.reviews?.reviews || [];
+            const newData = {
                 ...supplierData,
                 reviews: {
-                    ...supplierData.reviews,
-                    reviews: supplierData.reviews.reviews.map((review) =>
+                    ...(supplierData.reviews || {}),
+                    reviews: existingReviews.map((review) =>
                         review.id === updatedReview.id ? updatedReview : review
                     ),
                 },
-            });
+            };
+            setSupplierData(newData);
+            await saveToBackend(newData);
         }
         setIsEditingReview(false);
     };
@@ -136,19 +134,18 @@ console.log("REVIEWS:", result.data.reviews);
         setIsEditingHeading(true);
     };
 
-    const handleSaveHeading = (updatedHeading: HeadingData) => {
+    const handleSaveHeading = async (updatedHeading: HeadingData) => {
         if (supplierData) {
-            setSupplierData((prev) => {
-                if (!prev) return prev;
-                return {
-                    ...prev,
-                    reviews: {
-                        ...prev.reviews,
-                        heading: updatedHeading.heading,
-                        description: updatedHeading.description,
-                    },
-                };
-            });
+            const newData = {
+                ...supplierData,
+                reviews: {
+                    ...(supplierData.reviews || {}),
+                    heading: updatedHeading.heading,
+                    description: updatedHeading.description,
+                },
+            };
+            setSupplierData(newData);
+            await saveToBackend(newData);
         }
         setIsEditingHeading(false);
     };
@@ -198,11 +195,14 @@ console.log("REVIEWS:", result.data.reviews);
     </h4>
 
     <div className="flex flex-col md:flex-row items-center gap-6">
-      <img
-        src={suppliers.manager?.imagePath || ""}
-        alt={suppliers.manager?.name?.en || ""}
-        className="w-60 h-80 object-cover border-4 border-gray-200 shadow-md"
-      />
+{suppliers.manager?.imagePath && (
+  <img
+    src={suppliers.manager.imagePath}
+    alt={suppliers.manager?.name?.en || "Manager"}
+    className="w-60 h-80 object-cover border-4 border-gray-200 shadow-md"
+  />
+)}
+
 
       <div className="text-center md:text-left">
         <h5 className="text-2xl font-bold text-gray-800">
@@ -229,11 +229,14 @@ console.log("REVIEWS:", result.data.reviews);
           {suppliers.supplierMap?.description?.en}
         </p>
 
-        <img
-          src={suppliers.supplierMap?.imagePath || ""}
-          alt="Global Supplier Map"
-          className="w-full h-80 object-cover rounded-lg shadow-md mb-4"
-        />
+{suppliers.supplierMap?.imagePath && (
+  <img
+    src={suppliers.supplierMap.imagePath}
+    alt="Global Supplier Map"
+    className="w-full h-80 object-cover rounded-lg shadow-md mb-4"
+  />
+)}
+
       </div>
     )}
   </div>
@@ -255,66 +258,71 @@ console.log("REVIEWS:", result.data.reviews);
                     )}
 
                     {/* === Reviews Section === */}
-                    <div className="bg-white rounded-xl p-8 shadow-lg border border-gray-100 relative">
+                   <div className="bg-white rounded-xl p-8 shadow-lg border border-gray-100 relative">
 
-                        {/* === Reviews Heading Section === */}
-                        <div className="bg-white shadow-lg p-6 relative mb-5">
-                            <h1 className="text-xl font-bold mb-5">Supplier Review Heading</h1>
-                            <button
-                                className="absolute top-2 right-2 text-white bg-primary p-2 hover:text-gray-300"
-                                onClick={handleEditHeading}
-                            >
-                                <Edit size={16} />
-                            </button>
-                            <h4 className="text-xl font-bold text-gray-800 mb-2">
-                                {reviews.heading.en}
-                            </h4>
-                            <p className="text-gray-600 mb-6">
-                                {reviews.description.en}
-                            </p>
-                        </div>
+  {/* Reviews Heading */}
+  <div className="bg-white shadow-lg p-6 relative mb-5">
+    <h1 className="text-xl font-bold mb-5">Supplier Review Heading</h1>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-  {reviews?.reviews?.length > 0 ? (
-    reviews.reviews.map((review) => (
-      <div
-        key={review.id}
-        className="border rounded-xl p-5 shadow hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center relative group"
-      >
-        <button
-          className="absolute top-2 right-2 text-white bg-primary p-2 hover:text-gray-300 hidden group-hover:block"
-          onClick={() => handleEditReview(review)}
-        >
-          <Edit size={16} />
-        </button>
+    <button
+      onClick={handleEditHeading}
+      className="absolute top-2 right-2 text-white bg-primary p-2 hover:text-gray-300"
+    >
+      <Edit size={16} />
+    </button>
 
-        <img
-          src={review.supplierLogoPath || "/placeholder.png"}
-          alt={review.supplierCompanyName?.en || ""}
-          className="w-24 h-24 object-cover mb-3 rounded-full"
-        />
+    <h4 className="text-xl font-bold text-gray-800 mb-2">
+      {reviews?.heading?.en}
+    </h4>
 
-        <h5 className="font-bold text-gray-800 text-lg">
-          {review.supplierCompanyName?.en}
-        </h5>
-
-        <p className="text-sm text-primary font-medium">
-          {review.country?.en}
-        </p>
-
-        <p className="text-gray-600 text-sm mt-2 line-clamp-4">
-          {review.message?.en}
-        </p>
-      </div>
-    ))
-  ) : (
-    <p className="col-span-4 text-center text-gray-500">
-      No reviews available
+    <p className="text-gray-600 mb-6">
+      {reviews?.description?.en}
     </p>
-  )}
+  </div>
+
+  {/* Reviews Grid */}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  {(reviews?.reviews || []).map((review) => (
+    <div
+      key={review.id}
+      className="border rounded-xl p-5 shadow hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center relative group"
+    >
+      {/* Edit Button */}
+      <button
+        onClick={() => handleEditReview(review)}
+        className="absolute top-2 right-2 text-white bg-primary p-2 hover:text-gray-300 hidden group-hover:block"
+      >
+        <Edit size={16} />
+      </button>
+
+      {/* Supplier Logo */}
+      <img
+        src={review?.supplierLogoPath || "/placeholder.png"}
+        alt={review?.supplierCompanyName?.en || "Supplier"}
+        className="w-24 h-24 object-cover mb-3 rounded-full"
+      />
+
+      {/* Supplier Name */}
+      <h5 className="font-bold text-gray-800 text-lg">
+        {review?.supplierCompanyName?.en || "Supplier"}
+      </h5>
+
+      {/* Country */}
+      <p className="text-sm text-primary font-medium">
+        {review?.country?.en || ""}
+      </p>
+
+      {/* Message */}
+      <p className="text-gray-600 text-sm mt-2 line-clamp-4">
+        {review?.message?.en || ""}
+      </p>
+    </div>
+  ))}
 </div>
 
-                    </div>
+
+</div>
+
 
                     {/* Edit Review Component */}
                     {isEditingReview && selectedReview && (
@@ -335,8 +343,8 @@ console.log("REVIEWS:", result.data.reviews);
                             <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-y-auto">
                                 <EditRevHeading
                                     headingData={{
-                                        heading: reviews.heading,
-                                        description: reviews.description,
+                                        heading: reviews?.heading || { en: "", zh: "", si: "" },
+                                        description: reviews?.description || { en: "", zh: "", si: "" },
                                     }}
                                     onSave={handleSaveHeading}
                                     onCancel={() => setIsEditingHeading(false)}

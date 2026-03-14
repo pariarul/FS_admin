@@ -153,6 +153,7 @@ English:
     try {
       const payload = {
         assetName: product.assetName,
+        oldImagePath: product.imagePath,
         imagePath: uploadedImage || product.imagePath,
         en: { category: product.category, imageName: languageDetails.en.imageName.trim(), origins: languageDetails.en.origins.split(',').map(o => o.trim()) },
         si: { category: languageDetails.si.category, imageName: languageDetails.si.imageName.trim(), origins: languageDetails.si.origins.split(',').map(o => o.trim()) },

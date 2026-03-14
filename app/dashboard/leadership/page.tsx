@@ -118,22 +118,46 @@ useEffect(() => {
 
   const headings = leadership.headings.en;
 
+  const saveToBackend = async (dataToSave: Leadership) => {
+    try {
+      const response = await fetch(`${baseURL}/leadership/update-leadership`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+           headings: dataToSave.headings,
+           destination1: dataToSave.destination1,
+           destination2: dataToSave.destination2,
+           destination3Description: dataToSave.destination3Description,
+           destination3: dataToSave.destination3
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update leadership data');
+      }
+    } catch (error) {
+       console.error(error);
+       alert('An error occurred while saving the data.');
+    }
+  };
+
   /* ──────────────────────── Edit Destination (Founder / Co-Founder) ──────────────────────── */
   const handleEditClick = (dest: Destination, key: 'destination1' | 'destination2') => {
     setEditData({ ...dest, destinationKey: key });
     setIsEditing(true);
   };
 
-  const handleSave = (updated: Destination) => {
+  const handleSave = async (updated: Destination) => {
     if (!leadership) return;
+    
+    let newData = { ...leadership };
+    if (editData?.destinationKey === 'destination1') newData.destination1 = updated;
+    else if (editData?.destinationKey === 'destination2') newData.destination2 = updated;
 
-    setLeadership((prev) => {
-      if (!prev) return prev;
-      const copy = { ...prev };
-      if (editData?.destinationKey === 'destination1') copy.destination1 = updated;
-      else if (editData?.destinationKey === 'destination2') copy.destination2 = updated;
-      return copy;
-    });
+    setLeadership(newData);
+    await saveToBackend(newData);
 
     setIsEditing(false);
     setEditData(null);
@@ -150,16 +174,16 @@ useEffect(() => {
     setIsEditingDirector(true);
   };
 
-  const handleDirectorSave = (updated: Director) => {
+  const handleDirectorSave = async (updated: Director) => {
     if (!leadership) return;
+    
+    const newDirectors = leadership.destination3.map((d) =>
+      d.id === updated.id ? updated : d
+    );
+    const newData = { ...leadership, destination3: newDirectors };
 
-    setLeadership((prev) => {
-      if (!prev) return prev;
-      const newDirectors = prev.destination3.map((d) =>
-        d.id === updated.id ? updated : d
-      );
-      return { ...prev, destination3: newDirectors };
-    });
+    setLeadership(newData);
+    await saveToBackend(newData);
 
     setIsEditingDirector(false);
     setEditDirectorData(null);
@@ -180,17 +204,19 @@ useEffect(() => {
     setIsEditingDirectorsDesc(true);
   };
 
-  const handleSaveDirectorsDesc = () => {
-    if (!directorsDescDraft) return;
-    setLeadership((prev) => {
-      if (!prev) return prev;
-      const updatedDesc = {
-        en: directorsDescDraft.en,
-        zh: directorsDescDraft.zh || undefined,
-        si: directorsDescDraft.si || undefined,
-      };
-      return { ...prev, destination3Description: updatedDesc };
-    });
+  const handleSaveDirectorsDesc = async () => {
+    if (!directorsDescDraft || !leadership) return;
+    
+    const updatedDesc = {
+      en: directorsDescDraft.en,
+      zh: directorsDescDraft.zh || undefined,
+      si: directorsDescDraft.si || undefined,
+    };
+    
+    const newData = { ...leadership, destination3Description: updatedDesc };
+    setLeadership(newData);
+    await saveToBackend(newData);
+
     setIsEditingDirectorsDesc(false);
     setDirectorsDescDraft(null);
   };

@@ -20,10 +20,10 @@ interface EditDirectorsProps {
 }
 
 const EditDirectors: React.FC<EditDirectorsProps> = ({ data, onSave, onCancel }) => {
-  const [name, setName] = useState(data.name);
-  const [title, setTitle] = useState(data.title);
-  const [description, setDescription] = useState(data.description);
-  const [imagePath, setImagePath] = useState(data.imagePath);
+  const [name, setName] = useState(data.name || { en: '', zh: '', si: '' });
+  const [title, setTitle] = useState(data.title || { en: '', zh: '', si: '' });
+  const [description, setDescription] = useState(data.description || { en: '', zh: '', si: '' });
+  const [imagePath, setImagePath] = useState(data.imagePath || '');
 
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -121,28 +121,7 @@ English:
       imagePath,
     };
 
-    setIsSaving(true);
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/leadership/update-leadership`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update director data');
-      }
-
-      onSave(updatedData);
-      window.location.reload();
-    } catch (error) {
-      console.error(error);
-      alert('An error occurred while updating director data.');
-    } finally {
-      setIsSaving(false);
-    }
+    onSave(updatedData);
   };
 
   // Unified file handler

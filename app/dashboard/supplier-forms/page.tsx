@@ -131,46 +131,55 @@ const SupplierFormsPage = () => {
     /* --------------------------------------------------------------
        1. FETCH ALL FORMS
        -------------------------------------------------------------- */
-    useEffect(() => {
-        const fetchSupplierForms = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch(`${baseURL}/supplier-form/get-supplierform`);
-                if (!response.ok) throw new Error("Failed to fetch supplier forms");
-                const data: SupplierForm[] = await response.json();
+useEffect(() => {
+    const fetchSupplierForms = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`${baseURL}/supplier-form/get-supplierform`);
+            if (!response.ok) throw new Error("Failed to fetch supplier forms");
 
-                const mappedData = data.map((form) => ({
-                    id: form.id,
-                    formData: {
-                        fullname: form.formData.fullname,
-                        companyname: form.formData.companyname,
-                        email: form.formData.email,
-                        phone: form.formData.phone,
-                        country: form.formData.country,
-                        businessType: form.formData.businessType,
-                        products: form.formData.products,
-                        quantity: form.formData.quantity,
-                        enquiry: form.formData.enquiry,
-                        website: form.formData.website,
-                        capacity: form.formData.capacity,
-                        certifications: form.formData.certifications,
-                        specificInfo: form.formData.specificInfo,
-                        category: form.formData.category,
-                    },
-                    date: form.date,
-                    time: form.time,
-                }));
+            // Our new controller returns { success, message, data }
+            const result = await response.json();
+            console.log(result);
 
-                setSupplierForms(mappedData);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : "An unknown error occurred");
-            } finally {
-                setLoading(false);
+            if (!result.success) {
+                throw new Error(result.message || "Failed to fetch supplier forms");
             }
-        };
 
-        fetchSupplierForms();
-    }, [baseURL]);
+            const data: SupplierForm[] = result.data;
+
+            const mappedData = data.map((form) => ({
+                id: form.id,
+                formData: {
+                    fullname: form.formData.fullname,
+                    companyname: form.formData.companyname,
+                    email: form.formData.email,
+                    phone: form.formData.phone,
+                    country: form.formData.country,
+                    businessType: form.formData.businessType,
+                    products: form.formData.products,
+                    quantity: form.formData.quantity,
+                    enquiry: form.formData.enquiry,
+                    website: form.formData.website,
+                    capacity: form.formData.capacity,
+                    certifications: form.formData.certifications,
+                    specificInfo: form.formData.specificInfo,
+                    category: form.formData.category,
+                },
+                date: form.date,
+                time: form.time,
+            }));
+
+            setSupplierForms(mappedData);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "An unknown error occurred");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchSupplierForms();
+}, [baseURL]);
 
     /* --------------------------------------------------------------
        2. COMBINED FILTERING (search + date) – memoised
