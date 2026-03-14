@@ -123,7 +123,7 @@ English:
 
     setIsSaving(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/leadership/update-directors`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/leadership/update-leadership`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -322,7 +322,7 @@ English:
             />
             <label className="block font-medium mb-1 text-gray-700">Description:</label>
             <textarea
-              value={description.en}
+              value={description.en }
               onChange={(e) => setDescription({ ...description, en: e.target.value })}
               className="w-full border border-gray-300 rounded-lg p-3 h-40 resize-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
             />

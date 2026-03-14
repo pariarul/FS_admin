@@ -74,36 +74,37 @@ export default function LeadershipSection() {
   const [directorsDescDraft, setDirectorsDescDraft] = useState<{ en: string; zh: string; si: string } | null>(null);
 
   /* ──────────────────────────────── Fetch data ──────────────────────────────── */
-  useEffect(() => {
-    const fetchLeadership = async () => {
-      try {
-        const res = await fetch(`${baseURL}/leadership/get-leadership`);
-        if (!res.ok) throw new Error('Failed to fetch leadership data');
+useEffect(() => {
+  const fetchLeadership = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${baseURL}/leadership/get-leadership`);
+      if (!res.ok) throw new Error('Failed to fetch leadership data');
 
-        const json = await res.json();
+      const json = await res.json();
+      console.log("Leadership API response:", json);
 
-        // <<< THE FIX >>>
-        // API returns: { success: true, data: { leadership: { … } } }
-        if (!json.success || !json.data?.leadership) {
-          throw new Error(json.message || 'Invalid response format');
-        }
-
-        setLeadership(json.data.leadership);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          console.error(err);
-          setError(err.message);
-        } else {
-          console.error('Unexpected error:', err);
-          setError('An unexpected error occurred.');
-        }
-      } finally {
-        setLoading(false);
+      // ✅ updated check
+      if (!json.success || !json.data) {
+        throw new Error(json.message || 'Invalid response format');
       }
-    };
 
-    if (baseURL) fetchLeadership();
-  }, []);
+      // ✅ use the data object directly
+      setLeadership(json.data);
+
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'An unexpected error occurred.';
+      console.error('Error fetching leadership:', err);
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (baseURL) fetchLeadership();
+}, [baseURL]);
+
+
 
   /* ──────────────────────────────── Loading / Error ──────────────────────────────── */
   if (loading)
@@ -260,33 +261,41 @@ export default function LeadershipSection() {
         </button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {leadership.destination3.map((director) => (
-          <div
-            key={director.id}
-            className="relative flex gap-6 p-6 bg-white border border-gray-100 rounded-xl hover:shadow-lg transition"
-          >
-            <button
-              className="absolute top-4 right-4 flex items-center gap-1 bg-primary text-white px-3 py-1 rounded-lg hover:bg-primary/90 transition"
-              onClick={() => handleDirectorEditClick(director)}
-            >
-              <Edit className="w-4 h-4" />
-              Edit
-            </button>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  {leadership?.destination3?.map((director, index) => (
+    <div
+      key={director.id || index} // fallback to index if id is missing
+      className="relative flex gap-6 p-6 bg-white border border-gray-100 rounded-xl hover:shadow-lg transition"
+    >
+      <button
+        className="absolute top-4 right-4 flex items-center gap-1 bg-primary text-white px-3 py-1 rounded-lg hover:bg-primary/90 transition"
+        onClick={() => handleDirectorEditClick(director)}
+      >
+        <Edit className="w-4 h-4" />
+        Edit
+      </button>
 
-            <img
-              src={director.imagePath}
-              alt={director.name.en}
-              className="w-32 h-auto rounded-xl object-cover shadow-md"
-            />
-            <div className="flex flex-col justify-center">
-              <h4 className="text-xl font-bold text-gray-800">{director.name.en}</h4>
-              <p className="text-primary font-medium mt-1">{director.title.en}</p>
-              <p className="mt-3 text-gray-600 leading-relaxed">{director.description.en}</p>
-            </div>
-          </div>
-        ))}
+      <img
+        src={director.imagePath || '/placeholder.png'} // fallback image
+        alt={director.name?.en || 'Director'}
+        className="w-32 h-auto rounded-xl object-cover shadow-md"
+      />
+
+      <div className="flex flex-col justify-center">
+        <h4 className="text-xl font-bold text-gray-800">
+          {director.name?.en || 'No Name'}
+        </h4>
+        <p className="text-primary font-medium mt-1">
+          {director.title?.en || 'No Title'}
+        </p>
+        <p className="mt-3 text-gray-600 leading-relaxed">
+          {director.description?.en || ''}
+        </p>
       </div>
+    </div>
+  ))}
+</div>
+
 
       {/* Edit directors description modal */}
       {isEditingDirectorsDesc && directorsDescDraft && (

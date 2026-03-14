@@ -13,67 +13,33 @@ const TermsConditionsPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+
   useEffect(() => {
-    const fetchTermsConditions = async () => {
-      try {
-        const response = await fetch(`${baseURL}/terms-conditions/get-terms-conditions`);
-        if (!response.ok) throw new Error('Failed to fetch terms conditions');
-        const data = await response.json();
+  const fetchTermsConditions = async () => {
+    try {
+      const response = await fetch(`${baseURL}/terms-conditions/get-terms-conditions`);
+      if (!response.ok) throw new Error("Failed to fetch terms conditions");
 
-        // Transform fetched data to maintain field order and handle inline content
-        const transformedData = {
-          ...data.termsConditions,
-          sections: data.termsConditions.sections.map((section: { en: Record<string, string | string[]>; zh: Record<string, string | string[]>; si: Record<string, string | string[]> }) => {
-            const transformBlocks = (langSection: Record<string, string | string[]>) => {
-              const blocks: { type: string; text?: string[]; items?: string[] }[] = [];
+      const result = await response.json();
 
-              Object.keys(langSection).forEach((key) => {
-                if (key.startsWith('order') && key.includes('_description')) {
-                  const content = Array.isArray(langSection[key])
-                    ? langSection[key].join(' ')
-                    : langSection[key];
-                  blocks.push({
-                    type: 'description',
-                    text: [content],
-                  });
-                } else if (key.startsWith('order') && key.includes('_points')) {
-                  blocks.push({
-                    type: 'points',
-                    items: Array.isArray(langSection[key]) ? langSection[key] : [],
-                  });
-                }
-              });
-
-              return blocks;
-            };
-
-            return {
-              ...section,
-              en: {
-                ...section.en,
-                blocks: transformBlocks(section.en),
-              },
-              zh: {
-                ...section.zh,
-                blocks: transformBlocks(section.zh),
-              },
-              si: {
-                ...section.si,
-                blocks: transformBlocks(section.si),
-              },
-            };
-          }),
-        };
-
-        setTermsConditions(transformedData);
-      } catch (error) {
-        console.error('Error fetching terms conditions:', error);
-      } finally {
-        setLoading(false);
+      if (!result.success) {
+        throw new Error(result.message || "Failed to fetch terms conditions");
       }
-    };
-    fetchTermsConditions();
-  }, [baseURL]);
+
+      const termsData = result.data; // <-- data from the API
+
+      // If your backend already stores `blocks`, no transformation is needed
+      setTermsConditions(termsData);
+
+    } catch (error) {
+      console.error("Error fetching terms conditions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchTermsConditions();
+}, [baseURL]);
 
   const handleSave = (updatedData: Terms) => {
     // Ensure `blocks` property is transformed back to match the expected structure

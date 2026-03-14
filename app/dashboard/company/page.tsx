@@ -70,30 +70,40 @@ const CompanyPage = () => {
 
   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  useEffect(() => {
-    const fetchCompanyData = async () => {
-      try {
-        const response = await fetch(`${baseURL}/company/get-company`);
-        if (!response.ok) throw new Error('Failed to fetch company data');
+useEffect(() => {
+  const fetchCompanyData = async () => {
+    setLoading(true);
+    try {
+      if (!baseURL) return;
 
-        const result = await response.json();
+      const response = await fetch(`${baseURL}/company/get-company`);
+      const result = await response.json();
+      console.log("API DATA:", result);
 
-        // Critical Fix: Extract `data` from response
-        if (!result.success || !result.data) {
-          throw new Error(result.message || 'Invalid response format');
-        }
+      if (!result.success || !result.data) throw new Error("Invalid response format");
 
-        setCompanyData(result.data); // Correct
-      } catch (err) {
-        console.error('Error fetching company data:', err);
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Ensure cards is always an array
+      const company = {
+        ...result.data,
+        cards: Array.isArray(result.data.cards) ? result.data.cards : [],
+      };
 
-    if (baseURL) fetchCompanyData();
-  }, [baseURL]);
+      setCompanyData(company);
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error("Error fetching company data:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCompanyData();
+}, [baseURL]);
+
+
+
+
 
   const handleSaveAbout = (updatedAbout: AboutData) => {
     setCompanyData((prev) =>

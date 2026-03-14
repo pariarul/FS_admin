@@ -102,7 +102,7 @@ English description:
     };
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/leadership/update-destination3-description`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/leadership/update-leadership`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

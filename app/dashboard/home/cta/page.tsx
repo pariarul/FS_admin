@@ -70,19 +70,32 @@ const CtaPage = () => {
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
 
   /* ----- fetch initial data ----- */
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`${baseURL}/home/get-cta-section`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json: CtaData = await res.json();
-        setData(json);
-      } catch (e) {
-        setError((e as Error).message);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await fetch(`${baseURL}/home/get-cta-section`);
+
+      if (!res.ok) {
+        throw new Error(`HTTP Error: ${res.status}`);
       }
-    };
-    fetchData();
-  }, []);
+
+      const json = await res.json();
+      console.log("CTA API Response:", json);
+
+      if (json?.success && json?.data) {
+        setData(json.data);
+      } else {
+        throw new Error("Invalid API response structure");
+      }
+
+    } catch (err) {
+      console.error("CTA Fetch Error:", err);
+      setError((err as Error).message);
+    }
+  };
+
+  fetchData();
+}, []);
 
   /* ----- translation handler ----- */
   const handleTranslate = async () => {

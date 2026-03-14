@@ -13,67 +13,32 @@ const PrivacyPolicyPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  useEffect(() => {
-    const fetchPrivacyPolicy = async () => {
-      try {
-                const response = await fetch(`${baseURL}/privacy-policy/get-privacy`);
-        if (!response.ok) throw new Error('Failed to fetch privacy policy');
-        const data = await response.json();
+useEffect(() => {
+  const fetchPrivacyPolicy = async () => {
+    try {
+      const response = await fetch(`${baseURL}/privacy-policy/get-privacy`);
+      if (!response.ok) throw new Error("Failed to fetch privacy policy");
 
-        // Transform fetched data to maintain field order and handle inline content
-        const transformedData = {
-          ...data.privacyPolicy,
-          sections: data.privacyPolicy.sections.map((section: { en: Record<string, string | string[]>; zh: Record<string, string | string[]>; si: Record<string, string | string[]> }) => {
-            const transformBlocks = (langSection: Record<string, string | string[]>) => {
-              const blocks: { type: string; text?: string[]; items?: string[] }[] = [];
+      const result = await response.json();
 
-              Object.keys(langSection).forEach((key) => {
-                if (key.startsWith('order') && key.includes('_description')) {
-                  const content = Array.isArray(langSection[key])
-                    ? langSection[key].join(' ')
-                    : langSection[key];
-                  blocks.push({
-                    type: 'description',
-                    text: [content],
-                  });
-                } else if (key.startsWith('order') && key.includes('_points')) {
-                  blocks.push({
-                    type: 'points',
-                    items: Array.isArray(langSection[key]) ? langSection[key] : [],
-                  });
-                }
-              });
-
-              return blocks;
-            };
-
-            return {
-              ...section,
-              en: {
-                ...section.en,
-                blocks: transformBlocks(section.en),
-              },
-              zh: {
-                ...section.zh,
-                blocks: transformBlocks(section.zh),
-              },
-              si: {
-                ...section.si,
-                blocks: transformBlocks(section.si),
-              },
-            };
-          }),
-        };
-
-        setPrivacyPolicy(transformedData);
-      } catch (error) {
-        console.error('Error fetching privacy policy:', error);
-      } finally {
-        setLoading(false);
+      if (!result.success) {
+        throw new Error(result.message || "Failed to fetch privacy policy");
       }
-    };
-    fetchPrivacyPolicy();
-  }, [baseURL]);
+
+      const privacyData = result.data;
+
+      // If your backend already stores `blocks`, no transformation is needed
+      setPrivacyPolicy(privacyData);
+
+    } catch (error) {
+      console.error("Error fetching privacy policy:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchPrivacyPolicy();
+}, [baseURL]);
 
   const handleSave = (updatedData: PrivacyPolicy) => {
     // Ensure `blocks` property is transformed back to match the expected structure

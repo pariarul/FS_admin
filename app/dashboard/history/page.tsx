@@ -38,21 +38,28 @@ const HistoryPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const response = await fetch(`${baseURL}/history/get-history`);
-        if (!response.ok) throw new Error('Failed to fetch history');
-        const data = await response.json();
-        setHistory(data.history);
-      } catch (error) {
-        console.error('Error fetching history:', error);
-      } finally {
-        setLoading(false);
+useEffect(() => {
+  const fetchHistory = async () => {
+    try {
+      const response = await fetch(`${baseURL}/history/get-history`);
+      if (!response.ok) throw new Error('Failed to fetch history');
+
+      const result = await response.json();
+
+      if (result.success) {
+        setHistory(result.data); // <-- use data, not data.history
+      } else {
+        console.error('Failed to fetch history:', result.message);
       }
-    };
-    fetchHistory();
-  }, [baseURL]);
+    } catch (error) {
+      console.error('Error fetching history:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchHistory();
+}, [baseURL]);
 
   const handleSave = (updatedData: History) => {
     setHistory(updatedData);

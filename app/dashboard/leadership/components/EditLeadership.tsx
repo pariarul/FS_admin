@@ -246,7 +246,7 @@ const EditLeadership: React.FC<EditLeadershipProps> = ({ data, onSave, onCancel 
     };
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/leadership/update-destination`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/leadership/update-leadership`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
