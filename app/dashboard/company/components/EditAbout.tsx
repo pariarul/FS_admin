@@ -184,9 +184,7 @@ English:
                         description: formData.si?.description || '',
                     },
                 },
-                videoSection: {
-                    path: formData.videoPath || '',
-                },
+                video_section_path: formData.videoPath || '',
             };
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/company/update-company`, {
@@ -201,6 +199,7 @@ English:
                 throw new Error('Failed to update about section');
             }
 
+            alert('About section updated successfully ✅');
             onSave(payload.about); // Update parent state
         } catch (error) {
             console.error(error);

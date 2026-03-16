@@ -40,7 +40,7 @@ const Dashboard = () => {
   useEffect(() => {
     // Support both localStorage + cookie (like your sidebar)
     const token = typeof window !== "undefined" ? localStorage.getItem("fs_admin_token") : null;
-  
+
   }, [router]);
 
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null);
@@ -88,7 +88,7 @@ const Dashboard = () => {
       gradient: "from-green-600 to-emerald-600",
       lightBg: "bg-green-50",
       links: [
-        { name: "Sub Admins", path: "/dashboard/sub-admins" },
+        // { name: "Sub Admins", path: "/dashboard/sub-admins" },
         { name: "Suppliers", path: "/dashboard/suppliers" },
         { name: "Supplier Forms", path: "/dashboard/supplier-forms" },
       ],
@@ -143,9 +143,8 @@ const Dashboard = () => {
                 key={category.title}
                 onMouseEnter={() => setHoveredCategory(idx)}
                 onMouseLeave={() => setHoveredCategory(null)}
-                className={`relative group bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 ${
-                  isHovered ? "shadow-xl scale-105 z-10" : "shadow-sm hover:shadow-md"
-                }`}
+                className={`relative group bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 ${isHovered ? "shadow-xl scale-105 z-10" : "shadow-sm hover:shadow-md"
+                  }`}
               >
                 {/* Top Gradient Line */}
                 <div
@@ -176,25 +175,22 @@ const Dashboard = () => {
                     <Link
                       key={link.path}
                       href={link.path}
-                      className={`flex items-center justify-between p-2 rounded-lg transition-all duration-200 group/link ${
-                        isHovered
+                      className={`flex items-center justify-between p-2 rounded-lg transition-all duration-200 group/link ${isHovered
                           ? `${category.lightBg} border ${category.color} border-opacity-20`
                           : "hover:bg-gray-50 border border-transparent"
-                      }`}
+                        }`}
                     >
                       <span
-                        className={`text-sm font-medium transition-colors ${
-                          isHovered ? category.color : "text-gray-700"
-                        }`}
+                        className={`text-sm font-medium transition-colors ${isHovered ? category.color : "text-gray-700"
+                          }`}
                       >
                         {link.name}
                       </span>
                       <ArrowRight
-                        className={`w-3.5 h-3.5 transition-all duration-200 ${
-                          isHovered
+                        className={`w-3.5 h-3.5 transition-all duration-200 ${isHovered
                             ? `${category.color} translate-x-1`
                             : "text-gray-300 group-hover/link:text-gray-400"
-                        }`}
+                          }`}
                       />
                     </Link>
                   ))}

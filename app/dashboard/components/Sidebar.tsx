@@ -74,14 +74,14 @@ const sidebarItems: SidebarItem[] = [
     icon: () => <FileText className="w-4 h-4" />,
     href: "/dashboard/terms-and-conditions",
   },
-  { title: "Sub Admins", icon: () => <Users className="w-4 h-4" />, href: "/dashboard/sub-admins" },
+  // { title: "Sub Admins", icon: () => <Users className="w-4 h-4" />, href: "/dashboard/sub-admins" },
   {
     title: "Suppliers Contacts",
     icon: () => <BookOpenCheck className="w-4 h-4" />,
     href: "/dashboard/supplier-forms",
   },
   { title: "Footer", icon: () => <FileEditIcon className="w-4 h-4" />, href: "/dashboard/footer" },
-   
+
   {
     title: "SEO Contents",
     icon: () => <Globe className="w-4 h-4" />, href: "/dashboard/seo-contents",
@@ -105,7 +105,7 @@ export default function Sidebar() {
     const token = localStorage.getItem("fs_admin_token");
 
 
-    if (!token ) {
+    if (!token) {
       router.push("/");
     }
   }, [router]);
@@ -218,8 +218,8 @@ export default function Sidebar() {
                           href={sub.href}
                           onClick={(e) => handleLinkClick(e, sub.href)}
                           className={`block px-3 py-1.5 text-sm rounded-md transition truncate ${isSubActive
-                              ? "bg-primary text-white"
-                              : "text-gray-600 hover:bg-primary hover:text-white"
+                            ? "bg-primary text-white"
+                            : "text-gray-600 hover:bg-primary hover:text-white"
                             }`}
                         >
                           {sub.title}

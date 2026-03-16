@@ -75,15 +75,15 @@ const FooterPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    logoPath: footerData?.footer.logoPath || '',
-    companyName: footerData?.footer.companyName || { en: '', zh: '', si: '' },
-    companyAddress: footerData?.footer.companyAddress || { en: '', zh: '', si: '' },
-    phone: footerData?.footer.links?.side4?.phone || '',
-    email: footerData?.footer.links?.side4?.email || '',
-    whatsappHref: footerData?.footer.links?.side4?.whatsappHref || '',
-    emailHref: footerData?.footer.links?.side4?.emailHref || '',
-    facebookHref: footerData?.footer.links?.side4?.facebookHref || '',
-    wechatHref: footerData?.footer.links?.side4?.wechatHref || '',
+    logoPath: footerData?.footer?.logoPath || '',
+    companyName: footerData?.footer?.companyName || { en: '', zh: '', si: '' },
+    companyAddress: footerData?.footer?.companyAddress || { en: '', zh: '', si: '' },
+    phone: footerData?.footer?.links?.side4?.phone || '',
+    email: footerData?.footer?.links?.side4?.email || '',
+    whatsappHref: footerData?.footer?.links?.side4?.whatsappHref || '',
+    emailHref: footerData?.footer?.links?.side4?.emailHref || '',
+    facebookHref: footerData?.footer?.links?.side4?.facebookHref || '',
+    wechatHref: footerData?.footer?.links?.side4?.wechatHref || '',
   });
   const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
   const [croppedLogo, setCroppedLogo] = useState<string | null>(null);
@@ -118,15 +118,15 @@ const FooterPage = () => {
   useEffect(() => {
     if (footerData) {
       setFormData({
-        logoPath: footerData.footer.logoPath || '',
-        companyName: footerData.footer.companyName || { en: '', zh: '', si: '' },
-        companyAddress: footerData.footer.companyAddress || { en: '', zh: '', si: '' },
-        phone: footerData.footer.links?.side4?.phone || '',
-        email: footerData.footer.links?.side4?.email || '',
-        whatsappHref: footerData.footer.links?.side4?.whatsappHref || '',
-        emailHref: footerData.footer.links?.side4?.emailHref || '',
-        facebookHref: footerData.footer.links?.side4?.facebookHref || '',
-        wechatHref: footerData.footer.links?.side4?.wechatHref || '',
+        logoPath: footerData.footer?.logoPath || '',
+        companyName: footerData.footer?.companyName || { en: '', zh: '', si: '' },
+        companyAddress: footerData.footer?.companyAddress || { en: '', zh: '', si: '' },
+        phone: footerData.footer?.links?.side4?.phone || '',
+        email: footerData.footer?.links?.side4?.email || '',
+        whatsappHref: footerData.footer?.links?.side4?.whatsappHref || '',
+        emailHref: footerData.footer?.links?.side4?.emailHref || '',
+        facebookHref: footerData.footer?.links?.side4?.facebookHref || '',
+        wechatHref: footerData.footer?.links?.side4?.wechatHref || '',
       });
     }
   }, [footerData]);
@@ -266,7 +266,7 @@ const FooterPage = () => {
     );
   }
 
-  const footer = footerData.footer;
+  const footer = footerData?.footer;
 
   return (
     <div className="flex bg-gradient-to-br from-gray-50 via-white to-gray-100 min-h-screen">
@@ -292,7 +292,7 @@ const FooterPage = () => {
 
         <div className="bg-white/90 backdrop-blur-md border border-gray-200/50 rounded-3xl shadow-xl p-10">
           <div className="flex items-center gap-6 mb-8">
-            {footer.logoPath ? (
+            {footer?.logoPath ? (
               <img
                 src={footer.logoPath}
                 alt="Company Logo"
@@ -305,15 +305,15 @@ const FooterPage = () => {
             )}
             <div>
               <h3 className="text-2xl font-bold text-primary">
-                {footer.companyName.en || 'Company Name (EN)'}
+                {footer?.companyName?.en || 'Company Name (EN)'}
               </h3>
               <p className="text-gray-600 leading-relaxed text-base">
-                {footer.companyAddress.en || 'Company Address (EN)'}
+                {footer?.companyAddress?.en || 'Company Address (EN)'}
               </p>
             </div>
           </div>
 
-          {footer.links?.side4?.heading && (
+          {footer?.links?.side4?.heading && (
              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <h4 className="text-lg font-semibold text-gray-700 mb-2">
                 {footer.links.side4.heading.en}

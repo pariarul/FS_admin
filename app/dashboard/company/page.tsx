@@ -56,7 +56,7 @@ interface CompanyData {
     si?: VisionMissionLang;
   };
   cards: Card[];
-  videoSectionPath: string;
+  video_section_path: string;
 }
 
 const CompanyPage = () => {
@@ -85,6 +85,7 @@ useEffect(() => {
       // Ensure cards is always an array
       const company = {
         ...result.data,
+        video_section_path: result.data.video_section_path || '',
         cards: Array.isArray(result.data.cards) ? result.data.cards : [],
       };
 
@@ -115,7 +116,7 @@ useEffect(() => {
               zh: updatedAbout.zh || prev.about.zh,
               si: updatedAbout.si || prev.about.si,
             },
-            videoSectionPath: updatedAbout.videoPath || prev.videoSectionPath,
+            video_section_path: updatedAbout.videoPath || prev.video_section_path,
           }
         : prev
     );
@@ -211,7 +212,7 @@ useEffect(() => {
 
             <div className="rounded-2xl overflow-hidden shadow-2xl transform group-hover:scale-[1.02] transition-all duration-300">
               <video controls className="w-full h-64 lg:h-80 rounded-2xl object-cover">
-                <source src={companyData.videoSectionPath} type="video/mp4" />
+                <source src={companyData.video_section_path} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>
@@ -224,7 +225,7 @@ useEffect(() => {
               en: companyData.about.en,
               zh: companyData.about.zh,
               si: companyData.about.si,
-              videoPath: companyData.videoSectionPath,
+              videoPath: companyData.video_section_path,
             }}
             onSave={handleSaveAbout}
             onCancel={() => setIsEditingAbout(false)}
