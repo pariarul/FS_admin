@@ -152,7 +152,7 @@ useEffect(() => {
   const handleSave = async (updated: Destination) => {
     if (!leadership) return;
     
-    let newData = { ...leadership };
+    const newData = { ...leadership };
     if (editData?.destinationKey === 'destination1') newData.destination1 = updated;
     else if (editData?.destinationKey === 'destination2') newData.destination2 = updated;
 
