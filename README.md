@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FS Trade - Admin CMS Dashboard
 
-## Getting Started
+A comprehensive Content Management System designed to manage the FS Trade client portal. This dashboard provides full control over the website content, catalog, and internationalization.
 
-First, run the development server:
+## 🌟 Key Features
+
+- **Dynamic Content Management**: Edit Hero sections, About pages, Leadership teams, and Suppliers.
+- **AI-Powered Translations**: Integrated with **Google Gemini AI** for automatic translation of website content into Mandarin and Sinhala.
+- **Product Catalog Management**: 
+  - Hierarchical category management.
+  - Image uploads and cropping.
+  - **Excel (XLSX) Import/Export**: Batch update products via spreadsheets.
+- **Secure Authentication**: JWT-based secure login with session management.
+- **Rich Text Editing**: Integrated with TipTap editor for localized descriptions.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 15 (App Router)](https://nextjs.org/)
+- **Styling**: Tailwind CSS 4
+- **Editor**: [TipTap](https://tiptap.dev/)
+- **AI**: [Google Gemini API](https://ai.google.dev/)
+- **Utility Libraries**: Axios, Lucide React, XLSX, React-Toastify.
+
+## 📦 Getting Started
+
+### Installation
+
+1. Navigate to the admin directory:
+   ```bash
+   cd admin
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Configure environment variables in `.env`:
+   ```env
+   NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api
+   NEXT_PUBLIC_GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+   ```
+
+### Running Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The admin dashboard will be available at [http://localhost:3001](http://localhost:3001).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Key Modules
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Home Management
+- **Hero**: Manage background images and branding logos.
+- **About**: Update sections with live previews and status counters.
+- **CTA**: Manage call-to-action sections with redirection links.
 
-## Learn More
+### Catalog Management
+- **Products**: Full CRUD for products including image galleries.
+- **Categories**: Map products to sectors for easier client navigation.
 
-To learn more about Next.js, take a look at the following resources:
+### Translation Flow
+1. Enter content in English.
+2. Click "Translate to Mandarin & Sinhala".
+3. Verify AI-generated content in the side-by-side columns.
+4. Save to update both DB and client-side instantly.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Built with ❤️ for FS Trade.
